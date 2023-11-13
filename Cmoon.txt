@@ -1,0 +1,9 @@
+sed -rn '/2022-11-08T08:25:27.273286-06:00 kali-raspberry-pi kernel:/,$ s/.*(SRC=([0-9]{1,3}\.){3}[0-9]{1,3}).*(DST=([0-9]{1,3}\.){3}[0-9]{1,3}).*(PROTO=[A-Z0-9]{0,6}).*($|(SPT=[0-9]{0,5})).*($|(DPT=[0-9]{0,5})).*/\1 \3 \5 \7 \9/p' kern.log > blockdat.txt
+
+
+awk '$2!="DST=192.168.4.2" && $2!="DST=192.168.4.3" && $2 != "DST=100.64.100.6" {print $0}' weirdos2.txt
+awk '$2=="DST=192.168.4.2" || $2=="DST=192.168.4.3" || $2 == "DST=100.64.100.6" {print $0}' weirdos2.txt
+
+
+awk '$2!="DST=192.168.4.2" && $2!="DST=192.168.4.3" && $2 != "DST=100.64.100.6" {print $0}' weirdos2.txt | xargs -I % sh -c "diggy=\$(echo % | sed -rn 's/.*DST=(.*) P.*/\1/p'); subby=\$(echo \$diggy | sed -rn 's/([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/\4\.\3\.\2\.\1/p'); money=\$(dig -x \$diggy | sed -rn 's/^'\$(echo \$subby)'\.in-addr.arpa\. .*PTR\t(.+)/\1/p'); echo \$money; echo -----; echo %"
+
